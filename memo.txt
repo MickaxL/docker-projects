@@ -1,0 +1,107 @@
+================================================================
+  DOCKER SETUP MEMO — Mickaël Paquet
+  OS : Ubuntu 24.04 LTS (WSL2 on Windows 11)
+  Date : March 2026
+================================================================
+
+----------------------------------------------------------------
+1. DOCKER INSTALLATION
+----------------------------------------------------------------
+
+# Method: official Docker auto-install script
+curl -fsSL https://get.docker.com | sudo sh
+
+# If error "dpkg lock" -> kill the process blocking apt:
+sudo kill <PID>  # PID is shown in the error message
+sudo rm /var/lib/dpkg/lock-frontend
+sudo rm /var/lib/dpkg/lock
+sudo dpkg --configure -a
+# Then re-run the curl script
+
+# Verify installation
+docker --version
+# -> Docker version 29.3.0, build 5927d80
+
+
+----------------------------------------------------------------
+2. POST-INSTALLATION CONFIGURATION
+----------------------------------------------------------------
+
+# Add your user to the docker group (avoids typing sudo every time)
+sudo usermod -aG docker $USER
+
+# Activate without restarting
+newgrp docker
+
+# Verify it works without sudo
+docker ps
+
+
+----------------------------------------------------------------
+3. STARTING DOCKER (WSL specific)
+----------------------------------------------------------------
+
+# On WSL, Docker does NOT start automatically at boot
+# You need to start it manually each time you open a terminal:
+sudo service docker start
+
+# Verify Docker is running
+sudo systemctl status docker
+# or
+docker info
+
+
+----------------------------------------------------------------
+4. INSTALLATION TEST
+----------------------------------------------------------------
+
+docker run hello-world
+# -> should display "Hello from Docker!"
+# What it does:
+#   1. Looks for hello-world image locally -> not found
+#   2. Downloads it from Docker Hub
+#   3. Creates a container from the image
+#   4. Displays the message and stops
+
+
+----------------------------------------------------------------
+5. ESSENTIAL COMMANDS
+----------------------------------------------------------------
+
+-- IMAGES --
+docker images                    # list local images
+docker pull nginx:alpine         # download an image
+docker rmi <image>               # delete an image
+docker build -t my-app .         # build an image from a Dockerfile
+
+-- CONTAINERS --
+docker run -d -p 8080:80 nginx   # run in background, port 8080->80
+docker run -it ubuntu bash       # run interactively (enter inside)
+docker ps                        # running containers
+docker ps -a                     # all containers (including stopped)
+docker stop <id or name>         # stop a container
+docker rm <id or name>           # delete a container
+docker logs <id or name>         # view logs
+docker exec -it <id> bash        # enter a running container
+
+-- DOCKER COMPOSE --
+docker compose up -d             # start the stack in background
+docker compose down              # stop and remove everything
+docker compose logs              # view stack logs
+docker compose ps                # status of services
+
+-- CLEANUP --
+docker system prune              # remove all unused resources
+docker system prune -a           # more aggressive cleanup
+
+-----------------------------------------------------------------
+
+-----------------------------------------------------------------
+
+WARNING: On WSL -> always run "sudo service docker start" first
+WARNING: The -d flag = detached = runs in background, does not block terminal
+WARNING: -p 8080:80 = port 8080 on your machine -> port 80 inside container
+WARNING: docker rm deletes the container but NOT the image (use docker rmi for image)
+WARNING: Never store passwords in a Dockerfile -> use .env files instead
+
+================================================================
