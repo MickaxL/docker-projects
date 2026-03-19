@@ -95,7 +95,7 @@ networks:
 
 ---
 
-## 🚀 Usage
+##  Usage
 
 ### Start the stack
 ```bash
@@ -149,7 +149,7 @@ docker compose stop
 
 ---
 
-## 👤 Author
+##  Author
 
 **Mickaël Paquet** — Junior Cybersecurity   
 [LinkedIn](https://www.linkedin.com/in/mickael-paquet7a0638312) · [GitHub](https://github.com/MickaxL)
